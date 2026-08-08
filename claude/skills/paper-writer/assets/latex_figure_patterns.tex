@@ -1,0 +1,65 @@
+% ============================================================
+% 자주 쓰는 LaTeX figure/표 패턴 모음
+% (elsarticle 계열: figure* 의 [pos=ht] 표기 사용)
+% ============================================================
+
+% ---------- 패턴 1: 세로 배치 subfigure (비교 구성) ----------
+\begin{figure*}[pos=ht]
+    \centering
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=0.8\textwidth]{figs/fig_a.png}
+        \caption{First perspective: what is shown, what to observe
+                 in normal vs anomaly cases.}
+        \label{fig:sub_a}
+    \end{subfigure}
+    \vspace{1em}
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=0.8\textwidth]{figs/fig_b.png}
+        \caption{Second perspective: complementary view.}
+        \label{fig:sub_b}
+    \end{subfigure}
+    \caption{Overall comparison description
+             (Blue: normal samples; Red: anomaly sample).
+             (a) First perspective. (b) Second perspective.}
+    \label{fig:comparison}
+\end{figure*}
+
+% ---------- 패턴 2: 가로 배치 subfigure (2열) ----------
+\begin{figure*}[pos=ht]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/fig_left.png}
+        \caption{Left panel description.}
+        \label{fig:left}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/fig_right.png}
+        \caption{Right panel description.}
+        \label{fig:right}
+    \end{subfigure}
+    \caption{Overall caption tying both panels together.}
+    \label{fig:pair}
+\end{figure*}
+
+% ---------- 패턴 3: 결과 표 (booktabs) ----------
+\begin{table}[pos=ht]
+    \centering
+    \caption{Performance comparison on the test set.
+             Best results in \textbf{bold}.}
+    \label{tab:results}
+    \begin{tabular}{lccc}
+        \toprule
+        Model & AUROC & F1 & Precision / Recall \\
+        \midrule
+        Baseline A      & 0.000 & 0.000 & 0.00 / 0.00 \\
+        Baseline B      & 0.000 & 0.000 & 0.00 / 0.00 \\
+        \textbf{Ours}   & \textbf{0.000} & \textbf{0.000}
+                        & \textbf{0.00 / 0.00} \\
+        \bottomrule
+    \end{tabular}
+\end{table}

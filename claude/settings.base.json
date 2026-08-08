@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote -v)",
+      "Bash(ls:*)",
+      "Bash(rg:*)",
+      "Bash(uv add:*)",
+      "Bash(uv remove:*)",
+      "Bash(uv sync:*)",
+      "Bash(uv lock:*)",
+      "Bash(uv pip install:*)",
+      "Bash(uv pip list:*)",
+      "Bash(uv python list)",
+      "Bash(uv tool list)",
+      "Bash(ruff check:*)",
+      "Bash(ruff format:*)"
+    ]
+  }
+}
