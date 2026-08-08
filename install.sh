@@ -66,15 +66,54 @@ python3 "$REPO_DIR/scripts/merge_settings.py" \
 mv "$CLAUDE_DIR/settings.json.tmp" "$CLAUDE_DIR/settings.json"
 echo "[install] settings.json (base + $PROFILE + 로컬 병합)"
 
-# 4) skills — repo 에 있는 스킬만 개별 교체 (다른 로컬 스킬은 보존)
-mkdir -p "$CLAUDE_DIR/skills"
-for skill_dir in "$PAYLOAD"/skills/*/; do
-    name="$(basename "$skill_dir")"
-    backup "skills/$name"
-    rm -rf "$CLAUDE_DIR/skills/$name"
-    cp -r "$skill_dir" "$CLAUDE_DIR/skills/$name"
-    echo "[install] skills/$name"
-done
+# 4) 스킬 — 이 repo 가 아니라 kitemo-plugins marketplace 가 제공한다.
+#    claude CLI 가 없거나 SKIP_PLUGINS=1 이면 안내만 하고 넘어간다.
+PLUGIN_MARKETPLACE="${PLUGIN_MARKETPLACE:-kite-mo/kitemo-plugins}"
+PLUGIN_NAME="${PLUGIN_NAME:-personal-common}"
+
+install_plugins() {
+    if [ -n "${SKIP_PLUGINS:-}" ]; then
+        echo "[skip]    플러그인 설치 건너뜀 (SKIP_PLUGINS)"
+        return 0
+    fi
+    if ! command -v claude >/dev/null 2>&1; then
+        echo "[skip]    claude CLI 없음 — 스킬은 설치되지 않았습니다."
+        echo "          설치 후 아래를 직접 실행하세요:"
+        echo "            claude plugin marketplace add $PLUGIN_MARKETPLACE"
+        echo "            claude plugin install $PLUGIN_NAME@kitemo-plugins"
+        return 0
+    fi
+    # marketplace add 는 이미 등록돼 있으면 실패하므로 update 로 대체한다
+    if claude plugin marketplace list 2>/dev/null | grep -q 'kitemo-plugins'; then
+        claude plugin marketplace update kitemo-plugins >/dev/null 2>&1 \
+            && echo "[plugin]  marketplace 갱신" \
+            || echo "[warn]    marketplace 갱신 실패 — 수동 확인 필요"
+    else
+        claude plugin marketplace add "$PLUGIN_MARKETPLACE" >/dev/null 2>&1 \
+            && echo "[plugin]  marketplace 등록: $PLUGIN_MARKETPLACE" \
+            || { echo "[warn]    marketplace 등록 실패 — 수동 확인 필요"; return 0; }
+    fi
+    if claude plugin list 2>/dev/null | grep -q "$PLUGIN_NAME"; then
+        claude plugin update "$PLUGIN_NAME" >/dev/null 2>&1 \
+            && echo "[plugin]  $PLUGIN_NAME 갱신 (적용은 다음 세션부터)" \
+            || echo "[plugin]  $PLUGIN_NAME 이미 최신"
+    else
+        claude plugin install "$PLUGIN_NAME@kitemo-plugins" >/dev/null 2>&1 \
+            && echo "[plugin]  $PLUGIN_NAME 설치" \
+            || echo "[warn]    $PLUGIN_NAME 설치 실패 — 수동 확인 필요"
+    fi
+}
+install_plugins
+
+# 5) 마이그레이션 — 예전 버전은 스킬을 ~/.claude/skills/ 로 복사했다.
+#    그대로 두면 플러그인과 같은 이름의 스킬이 두 벌 로드된다.
+#    백업만 남기고 치운다 (플러그인이 이제 정본).
+LEGACY_SKILLS="$CLAUDE_DIR/skills"
+if [ -d "$LEGACY_SKILLS" ] && [ -n "$(ls -A "$LEGACY_SKILLS" 2>/dev/null)" ]; then
+    backup "skills"
+    rm -rf "${LEGACY_SKILLS:?}"
+    echo "[migrate] 구버전 ~/.claude/skills 제거 (플러그인과 중복) — 백업됨"
+fi
 
 if [ -d "$BACKUP_DIR" ]; then
     echo "[backup]  기존 파일 백업 → $BACKUP_DIR"

@@ -19,5 +19,7 @@
   - `reasoning_principles.md`: 통합 사고·작업 원리 7개 + 표준 흐름 (Karpathy 4원칙 흡수)
   - `python_coding_rule.md`: Python 코딩 표준
 - `~/.claude/rules_archive/`: 흡수·폐기된 규칙 원본 보관 (자동 로드 안 됨)
-- `~/.claude/skills/`: Claude Skills 구성 요소 (상황별 온디맨드 로드)
 - `~/.claude/templates/`: 작업 템플릿 (실험 계획, 리뷰 대응)
+- **스킬은 이 repo 가 아니라 `kite-mo/kitemo-plugins` marketplace 의
+  `personal-common` 플러그인이 제공한다** (상황별 온디맨드 로드).
+  `claude plugin list` 로 설치 여부를 확인할 수 있다.

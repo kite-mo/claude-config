@@ -1,23 +1,32 @@
 # claude-config
 
-개인 Claude Code 작업 환경(규칙·스킬·템플릿)을 어느 계정/PC/서버에서든
+개인 Claude Code **환경**(전역 지시·규칙·템플릿·권한)을 어느 PC/서버에서든
 동일하게 이식하기 위한 설정 repo.
 
-두 서버의 사용 기록 분석(세션 아카이브 170여 건)으로 추출한
-작업 원리와 반복 작업 자동화 스킬을 담고 있다 (2026-07-12 통합).
+**스킬은 여기 없다.** 스킬은 [kite-mo/kitemo-plugins](https://github.com/kite-mo/kitemo-plugins)
+marketplace 의 `personal-common` 플러그인이 담당한다. 두 repo 는 역할이 다르다.
+
+| | claude-config (여기) | kitemo-plugins |
+|---|---|---|
+| 담당 | 환경 — CLAUDE.md, rules, templates, 권한, 머신 프로필 | 재사용 스킬 |
+| 이유 | 플러그인은 rules 나 전역 settings 를 실을 수 없다 | 버전 관리·`/plugin update` 가 된다 |
+| 설치 | `./install.sh` | `install.sh` 가 대신 호출 |
 
 ## 설치
 
 ```bash
-git clone <this-repo> && cd claude-config
-./install.sh          # payload 를 ~/.claude 로 복사 (기존 파일은 자동 백업)
+git clone https://github.com/kite-mo/claude-config.git && cd claude-config
+./install.sh
 ```
 
+- payload 를 `~/.claude` 로 복사하고, 이어서 **플러그인 marketplace 등록과
+  설치까지 수행한다.** 새 머신에서 이 두 줄이면 끝난다.
 - 기존 `~/.claude` 파일은 `~/.claude/backup_<timestamp>/` 에 백업된다.
-- `CLAUDE.md`/`rules`/`rules_archive`/`templates` 는 통째로 교체,
-  `skills` 는 repo 가 가진 것만 개별 교체 (로컬 전용 스킬은 보존).
+- `CLAUDE.md`/`rules`/`rules_archive`/`templates` 는 통째로 교체한다.
 - `settings.json` 은 교체가 아니라 **병합**한다 (아래 "권한 설정" 참고).
-- 대화 기록·인증(`projects/`, `.claude.json`, `plugins/`)은 건드리지 않는다.
+- 대화 기록·인증(`projects/`, `.claude.json`)은 건드리지 않는다.
+- `claude` CLI 가 없으면 플러그인 단계는 건너뛰고 안내만 출력한다.
+  `SKIP_PLUGINS=1 ./install.sh` 로 명시적으로 끌 수도 있다.
 
 ## 구조
 
@@ -30,15 +39,6 @@ claude/                        ← ~/.claude 로 복사되는 payload
 │   ├── reasoning_principles.md#   통합 사고·작업 원리 7개 + 표준 흐름 (Karpathy 흡수)
 │   └── python_coding_rule.md  #   Python 코딩 표준
 ├── rules_archive/             # 흡수·폐기된 규칙 원본 (자동 로드 안 됨)
-├── skills/                    # 상황별 온디맨드 절차
-│   ├── research-kickoff/      #   세션 시작 — 아카이브·메모리·백그라운드 작업 브리핑
-│   ├── experiment-runner/     #   GPU 실험 실행 — seed·nohup 큐·재현 게이트
-│   ├── experiment-notebook/   #   실험 결과 정리 — 4단계 규약 노트북
-│   ├── rebuttal-response/     #   피어리뷰 대응 — 논리 설계 → 영문 초안
-│   ├── paper-writer/          #   논문 작성 — LaTeX figure·캡션·섹션
-│   ├── handover-doc/          #   인수인계 — 히스토리 + 실행 검증 노트북
-│   ├── usage-report/          #   사용량 팀 CSV (ccusage)
-│   └── thinking-first-spec/   #   문제 정의 → 명세 (소크라틱 Q&A)
 └── templates/
     ├── experiment_plan.md     # 실험 계획 템플릿
     └── revision_response.md   # 리뷰 대응 템플릿
@@ -60,7 +60,10 @@ scripts/merge_settings.py      ← settings 병합기 (base + patch + 로컬)
   주의가 희석된다. 파일당 단일 책임 — user_context(스타일·사실) /
   reasoning(사고·검증) / python(문법 표준).
 - **절차는 스킬로**: 상황별 세부 절차는 rules 에 넣지 않고 스킬로 분리
-  (트리거될 때만 로드).
+  (트리거될 때만 로드). 스킬은 kitemo-plugins repo 가 갖는다.
+- **환경과 스킬을 분리**: rules·settings 는 머신에 붙는 것이라 파일 복사로
+  설치하고, 스킬은 재사용 단위라 플러그인으로 버전 관리한다. 한 repo 에
+  섞으면 스킬만 업데이트하고 싶을 때 환경까지 건드리게 된다.
 
 ## 머신 프로필
 
@@ -110,7 +113,7 @@ claude/settings.base.json  +  profiles/<프로필>/settings.patch.json  +  기�
 ## 관리 플로우
 
 ```bash
-# 로컬 ~/.claude 에서 규칙/스킬을 수정·검증한 뒤:
+# 로컬 ~/.claude 에서 규칙/템플릿을 수정·검증한 뒤:
 ./sync_from_local.sh   # ~/.claude → repo (infra_rule.md 는 현재 프로필로만)
 git diff               # 변경 확인 — 다른 머신의 profiles/* 가 뜨면 잘못된 것
 git add -A && git commit
@@ -125,4 +128,6 @@ git pull && ./install.sh
 - 이 repo 는 **개인 작업 방식**(사고 원리·연구 워크플로우) 전용이다.
   조직 공용 스킬을 쓰게 되면 그건 별도 plugin marketplace 로 관리하고
   여기에 섞지 않는다.
-- 스킬 검증: `skill-creator` 스킬의 `scripts/quick_validate.py <skill-dir>`.
+- 스킬을 고치려면 kitemo-plugins repo 에서 작업한 뒤
+  `claude plugin marketplace update kitemo-plugins` 로 반영한다.
+  이 repo 의 `sync_from_local.sh` 는 스킬을 다루지 않는다.

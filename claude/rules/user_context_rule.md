@@ -46,9 +46,11 @@
   재현, 변형은 명시적 플래그. 실행 전 핵심 config 를 기준과 diff 확인
 - 논문 figure/차트는 영문 전용, 출판 산출물의 식별자(센서명 등)는
   익명화 맵 적용
-- 관련 스킬: research-kickoff(세션 시작), experiment-runner(실험 실행),
+- 관련 스킬(`personal-common` 플러그인): research-kickoff(세션 시작),
+  session-archiver(세션 정리), experiment-runner(실험 실행),
   experiment-notebook(결과 정리), rebuttal-response(리뷰 대응 설계),
-  paper-writer(논문 작성), handover-doc(인수인계), usage-report(사용량)
+  paper-writer(논문 작성), handover-doc(인수인계), git-manager(커밋 정리),
+  usage-report(사용량), thinking-first-spec(문제 정의)
 
 ## 인프라
 

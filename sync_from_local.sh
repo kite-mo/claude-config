@@ -35,17 +35,8 @@ else
     echo "[warn] $CLAUDE_DIR/rules/infra_rule.md 없음 — 프로필 갱신 건너뜀"
 fi
 
-# 3) skills 는 repo 가 추적 중인 스킬만 갱신 (로컬 전용 스킬은 안 가져옴)
-for skill_dir in "$PAYLOAD"/skills/*/; do
-    name="$(basename "$skill_dir")"
-    if [ -d "$CLAUDE_DIR/skills/$name" ]; then
-        rm -rf "$skill_dir"
-        cp -r "$CLAUDE_DIR/skills/$name" "$skill_dir"
-        echo "[sync] skills/$name"
-    else
-        echo "[warn] 로컬에 skills/$name 없음 — repo 버전 유지"
-    fi
-done
+# 3) 스킬은 이 repo 소관이 아니다. kitemo-plugins repo 에서 직접 수정한 뒤
+#    `claude plugin marketplace update kitemo-plugins` 로 반영한다.
 
 # 4) settings.json 은 자동으로 끌어올리지 않는다.
 #    로컬에는 "항상 허용"으로 쌓인 1회용 승인이 섞여 있어 그대로 올리면
