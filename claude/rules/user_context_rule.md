@@ -49,8 +49,7 @@
 - 관련 스킬(`personal-common` 플러그인): research-kickoff(세션 시작),
   session-archiver(세션 정리), experiment-runner(실험 실행),
   experiment-notebook(결과 정리), rebuttal-response(리뷰 대응 설계),
-  paper-writer(논문 작성), handover-doc(인수인계), git-manager(커밋 정리),
-  usage-report(사용량), thinking-first-spec(문제 정의)
+  paper-writer(논문 작성), git-manager(커밋 정리)
 
 ## 인프라
 
