@@ -8,7 +8,6 @@
       "Bash(git branch:*)",
       "Bash(git remote -v)",
       "Bash(ls:*)",
-      "Bash(rg:*)",
       "Bash(uv add:*)",
       "Bash(uv remove:*)",
       "Bash(uv sync:*)",
@@ -18,7 +17,14 @@
       "Bash(uv python list)",
       "Bash(uv tool list)",
       "Bash(ruff check:*)",
-      "Bash(ruff format:*)"
+      "Bash(ruff format:*)",
+      "Bash(uv run pytest:*)"
+    ],
+    "deny": [
+      "Read(~/**/.env)",
+      "Read(~/**/.env.local)",
+      "Read(~/.claude.json)",
+      "Read(~/.ssh/**)"
     ]
   }
 }
